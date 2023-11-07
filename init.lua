@@ -84,7 +84,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',       opts = {} },
+      { "j-hui/fidget.nvim",       tag = "legacy", event = "LspAttach", opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -121,6 +121,8 @@ require('lazy').setup({
     end,
   },
 
+
+
   -- { -- Theme inspired by Atom
   --   'navarasu/onedark.nvim',
   --   priority = 1000,
@@ -144,16 +146,16 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
-  },
+  -- {
+  --   -- Add indentation guides even on blank lines
+  --   'lukas-reineke/indent-blankline.nvim',
+  --   -- Enable `lukas-reineke/indent-blankline.nvim`
+  --   -- See `:help indent_blankline.txt`
+  --   opts = {
+  --     char = '|',
+  --     main = 'ibl',
+  --   },
+  -- },
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim',         opts = {} },
@@ -239,6 +241,7 @@ vim.o.timeoutlen = 300
 
 -- Set tabstop to 4 (Tab team)
 vim.o.tabstop = 4
+vim.o.shiftwidth = 4
 
 -- Set relative number
 vim.o.relativenumber = true
@@ -286,13 +289,14 @@ require('telescope').setup {
   },
 }
 
-require('nightly').setup{
-    color = 'black', -- blue, green or red
-    transparent = false,
-    styles = {
-        comments = { italic = false },
-    },
+require('nightly').setup {
+  color = 'black', -- blue, green or red
+  transparent = false,
+  styles = {
+    comments = { italic = false },
+  },
 }
+
 
 require('nightly').load()
 
@@ -535,4 +539,5 @@ cmp.setup {
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+-- .
 -- .
