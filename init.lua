@@ -1,11 +1,10 @@
 --[[
   Neovim 0.11 Native Configuration
-  "The Fixed Init" + Old Theme & Tabs + Clean ASCII
+  "The Fixed Init" + Old Theme/Tabs + Clean ASCII + Fixed Float Widths
   
   Changes:
-  - Removed special listchars (hidden whitespace)
-  - Removed unicode diagnostic signs
-  - Removed status notification icons
+  - Added Max Width constraints to LSP Hover & Signature windows
+  - Added Max Width constraints to nvim-cmp documentation
 ]]
 
 -- ========================================================================== --
@@ -40,7 +39,6 @@ vim.opt.scrolloff = 10
 
 -- CLEAN UI: Disable special chars for whitespace
 vim.opt.list = false 
--- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' } 
 
 -- ========================================================================== --
 -- ==                        PLUGIN MANAGER (Lazy.nvim)                    == --
@@ -61,7 +59,7 @@ require("lazy").setup({
   -- UI Enhancements
   { "folke/which-key.nvim", event = "VeryLazy", opts = {} },
   
-  -- Notification Status (Cleaned icons)
+  -- Notification Status
   { "j-hui/fidget.nvim", opts = {} },
 
   -- THEME: Rose Pine
@@ -86,30 +84,9 @@ require("lazy").setup({
                 border = "muted",
                 link = "iris",
                 panel = "surface",
-
-                error = "love",
-                hint = "iris",
-                info = "foam",
-                warn = "gold",
-
-                git_add = "foam",
-                git_change = "rose",
-                git_delete = "love",
-                git_dirty = "rose",
-                git_ignore = "muted",
-                git_merge = "iris",
-                git_rename = "pine",
-                git_stage = "iris",
-                git_text = "rose",
-                git_untracked = "subtle",
-
                 headings = {
-                    h1 = "iris",
-                    h2 = "foam",
-                    h3 = "rose",
-                    h4 = "gold",
-                    h5 = "pine",
-                    h6 = "foam",
+                    h1 = "iris", h2 = "foam", h3 = "rose",
+                    h4 = "gold", h5 = "pine", h6 = "foam",
                 },
             },
         })
@@ -128,7 +105,7 @@ require("lazy").setup({
     },
   },
 
-  -- AUTOCOMPLETION
+  -- AUTOCOMPLETION (Fixed Widths)
   {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
@@ -148,6 +125,14 @@ require("lazy").setup({
           expand = function(args)
             luasnip.lsp_expand(args.body)
           end,
+        },
+        -- FIX: Limit documentation window width
+        window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered({
+                max_width = 80,
+                max_height = 20,
+            }),
         },
         completion = { completeopt = 'menu,menuone,noinsert' },
         mapping = cmp.mapping.preset.insert({
@@ -186,7 +171,7 @@ require("lazy").setup({
     end,
   },
 
-  -- LSP CONFIGURATION
+  -- LSP CONFIGURATION (Fixed Widths)
   {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -196,6 +181,15 @@ require("lazy").setup({
     },
     config = function()
       require("mason").setup()
+
+      -- FIX: Global override for floating window borders and size
+      local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+      function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+        opts = opts or {}
+        opts.border = opts.border or "rounded"
+        opts.max_width = opts.max_width or 80 -- Global max width for all LSP floats
+        return orig_util_open_floating_preview(contents, syntax, opts, ...)
+      end
       
       local servers = {
         lua_ls = {
@@ -272,9 +266,9 @@ require("lazy").setup({
 vim.diagnostic.config({
   virtual_text = false,
   virtual_lines = { current_line = true },
-  -- signs = { text = { ... } }, -- Custom signs removed to use defaults
   float = {
     border = 'rounded',
     source = 'always',
+    max_width = 80, -- Constraint for diagnostic floats
   },
 })
